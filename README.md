@@ -67,6 +67,14 @@ geo-position/
 - Senden Sie zuerst die Geodaten per WhatsApp.
 - Nehmen Sie danach das Panoramavideo mit der Kamera-App Ihres Handys auf und senden Sie es ebenfalls per WhatsApp.
 - Bitte fügen Sie eine kurze Beschreibung hinzu, damit später alle Informationen zur Bearbeitung vorhanden sind.
+      -- Schreiben Sie kurz dazu:
+      -- Was ist an diesem Ort besonders?
+      -- Was ist auf dem Panorama zu sehen?
+      -- Wo wurde das Video aufgenommen?
+      -- Was ist an diesem Ort besonders?
+      -- Was soll man auf dem Panorama sehen?
+
+Diese Beschreibung hilft später bei der Bearbeitung, zum Beispiel um einen passenden Alt-Text für eine Webseite oder eine Karte zu erstellen.      
 
 **Achtung:** Diese App hat keine eigene Aufnahmefunktion.
 ```
