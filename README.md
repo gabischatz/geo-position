@@ -22,7 +22,7 @@ Nach dem Teilen des Geo-Textes wird das **Panoramavideo separat aufgenommen und 
 ## Screenshots
 
 ### 1. Startseite mit Installationsbutton
-![Startseite mit Installationsbutton](docs/screenshots/01-startseite-installation.png)
+<img src="docs/screenshots/01-startseite-installation.png" alt="Startseite mit Installationsbutton" width="120">
 
 ### 2. Installationsdialog
 ![Installationsdialog](docs/screenshots/02-install-dialog.png)
