@@ -63,7 +63,13 @@ geo-position/
 ├── README.md
 └── assets/
 ```
+## 
+- Senden Sie zuerst die Geodaten per WhatsApp.
+- Nehmen Sie danach das Panoramavideo mit der Kamera-App Ihres Handys auf und senden Sie es ebenfalls per WhatsApp.
+- Bitte fügen Sie eine kurze Beschreibung hinzu, damit später alle Informationen zur Bearbeitung vorhanden sind.
 
+**Achtung:** Diese App hat keine eigene Aufnahmefunktion.
+```
 ## Wichtige Hinweise
 
 - Das FotoGeoTool liegt unter:
