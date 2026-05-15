@@ -24,7 +24,7 @@ Nach dem Teilen des Geo-Textes wird das **Panoramavideo separat aufgenommen und 
 
 ## Screenshots
 
-<table>
+<table width="100%" >
   <tr>
     <td width="50%" valign="top">
       <h3>1. Startseite mit Installationsbutton</h3>
