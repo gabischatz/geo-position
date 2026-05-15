@@ -25,19 +25,20 @@ Nach dem Teilen des Geo-Textes wird das **Panoramavideo separat aufgenommen und 
 <img src="docs/screenshots/01-startseite-installation.png" alt="Startseite mit Installationsbutton" width="120">
 
 ### 2. Installationsdialog
-![Installationsdialog](docs/screenshots/02-install-dialog.png)
+<img src="docs/screenshots/02-install-dialog.png" alt="Installationsdialog" width="120">
 
 ### 3. Browser-Tab nach Installation schließen
-![Browser-Tab schließen](docs/screenshots/03-browser-tab-schliessen.png)
+<img src="docs/screenshots/03-browser-tab-schliessen.png" alt="Browser-Tab schließen" width="120">
 
 ### 4. Startseite der App
-![Startseite](docs/screenshots/04-startseite.png)
+<img src="docs/screenshots/04-startseite.png" alt="Startseite App" width="120">
 
 ### 5. Ausrichtung auf der Karte setzen
-![Ausrichtung auf der Karte setzen](docs/screenshots/05-ausrichtung.png)
+<img src="docs/screenshots/05-ausrichtung.png" alt="Ausrichtung auf der Karte setzen" width="120">
 
 ### 6. Fertig-Seite und Geo-Text teilen
-![Fertig-Seite und Geo-Text teilen](docs/screenshots/06-fertig-geo-text.png)
+<img src="docs/screenshots/06-fertig-geo-text.png" alt="Fertig-Seite und Geo-Text teilen" width="120">
+![](docs/screenshots/.png)
 
 ## Ablauf
 
