@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PWA-Daten löschen · GeoPosition</title>
+<style>
+body{font-family:system-ui,Segoe UI,Arial,sans-serif;background:#0f172a;color:#f8fafc;padding:20px;line-height:1.45}
+main{max-width:760px;margin:auto;background:#111827;border:1px solid #334155;border-radius:22px;padding:20px}
+button{border:0;border-radius:999px;padding:14px 18px;font-weight:800;background:#ef4444;color:white;font-size:1rem}
+pre{white-space:pre-wrap;background:#020617;border:1px solid #334155;border-radius:14px;padding:12px;margin-top:16px}
+a{color:#86efac}
+</style>
+</head>
+<body>
+<main>
+<h1>🧹 PWA-Daten löschen</h1>
+<p>Diese Seite löscht Browser-Daten, die alte PWAs auf dieser Domain festhalten können: Service Worker, Cache Storage, Local Storage, Session Storage und bekannte IndexedDB-Datenbanken. Danach bitte Chrome komplett schließen und die App neu öffnen.</p>
+<p><b>Hinweis:</b> Wenn eine alte Root-App von <code>/</code> die Unterseite <code>/geo-position/</code> kontrolliert, muss dieser Schritt einmal ausgeführt werden.</p>
+<button id="run">Jetzt Browser-PWA-Daten löschen</button>
+<pre id="out">Noch nicht gestartet.</pre>
+<p><a href="/geo-position/index.html?app=geoposition-standort-teiler-v0317&fresh=1">Danach GeoPosition öffnen</a></p>
+</main>
+<script>
+const out=document.getElementById('out');
+function log(t){out.textContent += "\\n" + t;}
+document.getElementById('run').addEventListener('click', async () => {
+  out.textContent='Starte Bereinigung …';
+  try {
+    if ('serviceWorker' in navigator) {
+      const regs = await navigator.serviceWorker.getRegistrations();
+      for (const reg of regs) {
+        log('Service Worker entfernt: ' + reg.scope);
+        await reg.unregister();
+      }
+    } else log('Keine Service-Worker-API.');
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      for (const key of keys) {
+        await caches.delete(key);
+        log('Cache entfernt: ' + key);
+      }
+    } else log('Keine Cache-API.');
+    try { localStorage.clear(); log('Local Storage geleert.'); } catch(e) { log('Local Storage konnte nicht geleert werden.'); }
+    try { sessionStorage.clear(); log('Session Storage geleert.'); } catch(e) { log('Session Storage konnte nicht geleert werden.'); }
+    if (indexedDB && indexedDB.databases) {
+      const dbs = await indexedDB.databases();
+      for (const db of dbs) {
+        if (db && db.name) {
+          indexedDB.deleteDatabase(db.name);
+          log('IndexedDB gelöscht: ' + db.name);
+        }
+      }
+    }
+    log('Fertig. Chrome bitte komplett schließen, dann /geo-position/index.html neu öffnen.');
+  } catch(e) {
+    log('Fehler: ' + e.message);
+  }
+});
+</script>
+</body>
+</html>

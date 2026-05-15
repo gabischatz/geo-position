@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<!--
+ Projekt: GeoPosition
+ Datei: https://overpass-osm.de.cool/geo-position/index.html
+ Autor: Lutz Müller
+ Programmiersprache: HTML, CSS, JavaScript
+
+ Version: 0.3.17
+ Stand: 2026-05-15
+
+ Zweck:
+   PWA zum Erfassen eines Standortes für Panoramavideos.
+   Die App markiert Standort, Blickrichtung und Drehrichtung und erzeugt
+   einen teilbaren Geo-Text mit Link zum FotoGeoTool.
+   Danach muss zusätzlich das Panoramavideo aufgenommen und versendet werden.
+
+ Lizenz:
+   CC BY 4.0
+-->
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+  <!-- ═══════════════════════════════════════════
+       SEO – Grundlegende Meta-Angaben
+  ═══════════════════════════════════════════ -->
+
+  <meta name="license" content="CC BY 4.0" />
+  <link rel="license" href="https://creativecommons.org/licenses/by/4.0/deed.de" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://overpass-osm.de.cool/geo-position/index.html" />
+
+  <link rel="manifest" href="/geo-position/manifest.webmanifest?v=0.3.17" />
+  <link rel="icon" type="image/png" sizes="192x192" href="/geo-position/assets/geoposition-icon-192-v0.3.1.png" />
+  <link rel="icon" type="image/png" sizes="512x512" href="/geo-position/assets/geoposition-icon-512-v0.3.1.png" />
+  <link rel="apple-touch-icon" href="/geo-position/assets/geoposition-icon-192-v0.3.1.png" />
+
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="application-name" content="GeoPosition" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="GeoPosition" />
+  <meta name="author" content="Lutz Müller (gabischatz)" />
+  <meta name="description" content="GeoPosition: Standort für Panoramavideos erfassen, Blickrichtung und Drehrichtung markieren, Geo-Text teilen und danach das Panoramavideo aufnehmen und ebenfalls versenden." />
+  <meta name="keywords" content="GeoPosition, Panoramavideo, Standort teilen, Blickrichtung, Drehrichtung, FotoGeoTool, Geotagging, GPS, Koordinaten, OpenStreetMap, Panoramax, PWA" />
+
+  <!-- ═══════════════════════════════════════════════
+       Open Graph – Vorschau in sozialen Netzwerken
+  ════════════════════════════════════════════════════ -->
+
+  <meta property="og:title" content="GeoPosition · Standort für Panoramavideos" />
+  <meta property="og:description" content="Standort, Blickrichtung und Drehrichtung für Panoramavideos erfassen, Geo-Text teilen und danach das Panoramavideo ebenfalls versenden." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://overpass-osm.de.cool/geo-position/index.html" />
+  <meta property="og:image" content="https://overpass-osm.de.cool/geo-position/assets/geoposition-icon-512-v0.3.1.png" />
+  <meta property="og:image:secure_url" content="https://overpass-osm.de.cool/geo-position/assets/geoposition-icon-512-v0.3.1.png" />
+  <meta property="og:image:type" content="image/x-icon" />
+  <!--
+    Absichtlich falscher MIME-Type:
+    WhatsApp und einige andere Messenger laden PNG-Vorschaubilder zuverlässiger,
+    wenn sie dem angegebenen Typ nicht blind vertrauen, sondern den Dateikopf
+    der Bilddatei selbst prüfen. Bei technisch korrektem image/png wurde die
+    Vorschau teilweise nicht angezeigt.
+  -->
+  <meta property="og:image:alt" content="GeoPosition App-Symbol mit Panoramavideo-Anleitung" />
+  <meta property="og:image:width" content="512" />
+  <meta property="og:image:height" content="512" />
+  <meta property="og:locale" content="de_DE" />
+  <meta property="og:site_name" content="overpass-osm.de.cool" />
+
+  <!-- ═══════════════════════════════════════════
+       Twitter Card – Vorschau auf X / Twitter
+  ════════════════════════════════════════════ -->
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="GeoPosition · Standort für Panoramavideos" />
+  <meta name="twitter:description" content="Standort, Blickrichtung und Drehrichtung für Panoramavideos erfassen. Danach Geo-Text und Panoramavideo versenden." />
+  <meta name="twitter:image" content="https://overpass-osm.de.cool/geo-position/assets/geoposition-icon-512-v0.3.1.png" />
+  <meta name="twitter:image:alt" content="GeoPosition App-Symbol mit Panoramavideo-Anleitung" />
+
+  <title>GeoPosition · Standort, Blickrichtung und Drehrichtung für Panoramavideos</title>
+
+  <!-- =====================================================
+       Externe Bibliotheken (CDN)
+       - Leaflet: OpenStreetMap-Karte
+  ===================================================== -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      height: 100svh;
+      height: 100dvh;
+      overflow: hidden;
+      background: radial-gradient(circle at 15% 0, #1f2b46 0, #090d18 48%, #050712 100%);
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+      font-size: 14px;
+    }
+
+    .app {
+      width: 100%;
+      height: 100vh;
+      height: 100svh;
+      height: 100dvh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+      position: relative;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 560px;
+      height: auto;
+      max-height: 100%;
+      min-height: 0;
+      margin: 0 auto;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      background: rgba(17, 24, 39, 0.96);
+      backdrop-filter: blur(2px);
+      border: 1px solid #34405a;
+      border-radius: clamp(26px, 6vw, 38px);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+      transition: all 0.2s ease;
+    }
+
+    .card.active {
+      display: flex;
+      animation: fadeSlideUp 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+    }
+
+    #step1.card.active,
+    #step2.card.active,
+    #step3.card.active {
+      height: 100%;
+      flex: 1 1 auto;
+    }
+
+    @keyframes fadeSlideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .hero {
+      flex: 0 0 auto;
+      padding: clamp(14px, 3.4vh, 22px) 18px clamp(8px, 1.8vh, 12px) 18px;
+      text-align: center;
+      border-bottom: 1px solid rgba(52, 64, 90, 0.6);
+      min-height: 0;
+    }
+
+    .hero h1 {
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #e0f2e9, #7cf1b3);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      font-size: clamp(1.2rem, 4.5vw, 1.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      margin: 0 0 6px 0;
+    }
+
+    #step1 .hero {
+      display: flex;
+      flex-direction: column;
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .hero-img {
+      width: 100%;
+      flex: 1 1 auto;
+      min-height: 0;
+      height: auto;
+      object-fit: contain;
+      margin-top: 8px;
+      border-radius: 28px;
+      display: block;
+    }
+
+    .dots {
+      flex: 0 0 auto;
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin: clamp(8px, 1.8vh, 14px) 0 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #4b5563;
+      transition: all 0.2s;
+    }
+
+    .dot.active {
+      background: #facc15;
+      box-shadow: 0 0 7px #facc15;
+      width: 26px;
+      border-radius: 12px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 60px;
+      padding: clamp(12px, 2.3vh, 14px) 18px;
+      min-height: clamp(48px, 7.3vh, 56px);
+      font-size: clamp(0.95rem, 3.5vw, 1rem);
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: #1e2a3e;
+      color: #f1f5f9;
+      transition: transform 0.1s, opacity 0.2s;
+      width: 100%;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn:active { transform: scale(0.97); }
+    .btn:disabled { opacity: 0.45; transform: none; cursor: not-allowed; }
+    .btn.primary { background: linear-gradient(105deg, #1e7e34, #0f766e); }
+    .btn.ghost { background: #2d3a4f; border: 1px solid #4a5b7a; }
+    .btn.danger { background: linear-gradient(105deg, #b91c1c, #ef4444); border: 1px solid rgba(254, 202, 202, 0.45); }
+    .btn.close-tab { background: linear-gradient(105deg, #b91c1c, #7f1d1d); border: 1px solid rgba(254, 202, 202, 0.45); }
+
+    #map {
+      flex: 1 1 auto;
+      min-height: 155px;
+      height: auto;
+      width: calc(100% - 24px);
+      margin: clamp(10px, 2vh, 18px) 12px 6px 12px;
+      border-radius: 28px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      background: #cbdff2;
+      z-index: 1;
+      overflow: hidden;
+    }
+
+    #step2 .hero { padding-bottom: clamp(8px, 1.6vh, 12px); }
+
+    .status-box {
+      flex: 0 0 auto;
+      margin: clamp(10px, 2vh, 12px) 16px 6px 16px;
+      padding: clamp(10px, 2vh, 12px) 14px;
+      border-radius: 20px;
+      background: rgba(34, 197, 94, 0.12);
+      border-left: 4px solid #22c55e;
+      font-size: clamp(0.82rem, 3.2vw, 0.9rem);
+      font-weight: 700;
+      line-height: 1.35;
+      color: #e2e8f0;
+    }
+
+    .status-box.error {
+      background: rgba(239, 68, 68, 0.12);
+      border-left-color: #ef4444;
+    }
+
+    .phone-rotation-container {
+      flex: 1 1 auto;
+      min-height: 0;
+      background: linear-gradient(145deg, #f9fafc, #eef2f8);
+      border-radius: 48px;
+      margin: 12px 20px 8px 20px;
+      padding: 16px 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.8);
+      overflow: hidden;
+    }
+
+    .instr-img {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 12px rgba(0, 0, 0, 0.15));
+      display: block;
+      margin: 0 auto;
+    }
+
+    .info-text {
+      flex: 0 0 auto;
+      padding: clamp(6px, 1.4vh, 8px) 24px clamp(12px, 2.4vh, 18px) 24px;
+      color: #cbd5e6;
+      font-size: clamp(0.82rem, 3.2vw, 0.92rem);
+      line-height: 1.42;
+      text-align: center;
+    }
+
+    .actions {
+      flex: 0 0 auto;
+      padding: clamp(12px, 2.2vh, 18px) 20px clamp(16px, 3vh, 26px) 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    #step1 .info-text {
+      padding-top: clamp(10px, 2vh, 16px);
+      padding-bottom: clamp(10px, 2vh, 16px);
+    }
+
+    #step1 .actions {
+      margin-top: auto;
+    }
+
+    .hidden { display: none !important; }
+
+    .direction-label {
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(4px);
+      color: #facc15;
+      border: 1px solid #facc15;
+      border-radius: 40px;
+      padding: 4px 10px;
+      font-weight: 800;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+
+    .direction-dot-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #facc15;
+      border: 4px solid #eab308;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    }
+
+    .direction-arc-arrow-icon {
+      width: 58px;
+      height: 58px;
+      transform-origin: center center;
+      filter: drop-shadow(0 2px 3px rgba(0,0,0,0.35));
+    }
+
+    .direction-arc-arrow-icon svg {
+      display: block;
+      width: 58px;
+      height: 58px;
+      overflow: visible;
+    }
+
+    .direction-arc-arrow-shape {
+      fill: #c81e0d;
+      stroke: #ffffff;
+      stroke-width: 4;
+      stroke-linejoin: round;
+    }
+
+    @media (max-width: 480px) {
+      .app { padding-left: 10px; padding-right: 10px; }
+      .phone-rotation-container { margin: 10px 16px 8px 16px; padding: 12px 8px; }
+      #map { min-height: 145px; border-radius: 24px; }
+      .actions { gap: 10px; }
+    }
+
+    @media (max-height: 700px) {
+      #step1 .hero-img { max-height: 100%; }
+      .hero { padding-top: 12px; padding-bottom: 8px; }
+      .status-box { margin-top: 8px; padding-top: 9px; padding-bottom: 9px; }
+      .info-text { padding-top: 5px; padding-bottom: 10px; }
+      .actions { padding-top: 10px; padding-bottom: 14px; }
+      .dots { margin-top: 7px; }
+      #map { min-height: 130px; }
+    }
+  </style>
+</head>
+<body>
+<main class="app">
+  <section id="step1" class="card active">
+    <div class="hero">
+      <h1>📍 GEOPOSITION</h1>
+      <img class="hero-img" src="/geo-position/assets/geoposition-startbild-v0.3.1.png" alt="Panorama Tool" onerror="this.src='https://placehold.co/400x150/1e2a3a/7cf1b3?text=Geo+Position'">
+      <div class="dots">
+        <div class="dot active"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+      </div>
+    </div>
+    <div class="info-text">
+      Erfasse deinen Standort, markiere Blick- und Drehrichtung.<br>
+      Perfekt für 360°-Panoramavideos.
+    </div>
+    <div class="actions">
+      <button id="closeTabBtn" class="btn close-tab hidden">✖ Browser-Tab schließen</button>
+      <button id="startBtn" class="btn primary">📱 App starten</button>
+      <button id="installBtn" class="btn danger">⬇ App installieren (PWA)</button>
+    </div>
+  </section>
+
+  <section id="step2" class="card">
+    <div class="hero">
+      <h1>🗺️ AUSRICHTUNG</h1>
+    </div>
+    <div id="status" class="status-box">📡 Standort wird ermittelt ...</div>
+    <div id="map"></div>
+    <div class="dots">
+      <div class="dot active"></div>
+      <div class="dot active"></div>
+      <div class="dot"></div>
+    </div>
+    <div class="info-text">
+      🔽 <strong>1. Blickrichtung</strong> auf dem gelben Kreis antippen<br>
+      🔄 <strong>2. Drehrichtung</strong> auf dem gelben Kreis antippen
+    </div>
+    <div class="actions">
+      <button id="toStep3Btn" class="btn primary" disabled>➡ Weiter & speichern</button>
+    </div>
+  </section>
+
+  <section id="step3" class="card">
+    <div class="hero">
+      <h1>📤 FERTIG</h1>
+    </div>
+    <div class="status-box" style="background: #1e293b;">
+      ✅ Standort & Richtungen gespeichert<br>
+      1️⃣ Geo-Text teilen<br>
+      2️⃣ Danach Panoramavideo aufnehmen und ebenfalls versenden
+    </div>
+    <div class="phone-rotation-container">
+      <img class="instr-img" src="/geo-position/assets/geoposition-rotate-v0.3.1.png" alt="Handy quer halten" onerror="this.src='https://placehold.co/400x180/FFFFFF/0f172a?text=📱+Querformat+halten'">
+    </div>
+    <div class="dots">
+      <div class="dot active"></div>
+      <div class="dot active"></div>
+      <div class="dot active"></div>
+    </div>
+    <div class="info-text">
+      Erst den Geo-Text teilen.<br>
+      Danach bitte das Panoramavideo aufnehmen und als zweite Nachricht versenden.
+    </div>
+    <div class="actions">
+      <button id="shareBtn" class="btn primary">💬 1. Geo-Text teilen</button>
+    </div>
+  </section>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(() => {
+  'use strict';
+
+  const APP_VERSION = '0.3.17';
+  const $ = id => document.getElementById(id);
+
+  let map, centerMarker, accuracyCircle, radiusCircle;
+  let headingLine, turnLine, headingMarker, turnMarker, turnArrowMarker;
+  let current = { lat: null, lon: null, accuracy: null };
+  let headingPoint = null;
+  let turnPoint = null;
+  let deferredInstallPrompt = null;
+
+  function isStandaloneMode() {
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+  }
+
+  function markAppInstalledInBrowser() {
+    try {
+      localStorage.setItem('geoposition_pwa_installed_v1', '1');
+    } catch (err) {
+      console.warn('Installationsstatus konnte nicht gespeichert werden', err);
+    }
+  }
+
+  function isAppInstalledInBrowser() {
+    try {
+      return localStorage.getItem('geoposition_pwa_installed_v1') === '1';
+    } catch (err) {
+      return false;
+    }
+  }
+
+  function updateStartScreenButtons() {
+    const startBtn = $('startBtn');
+    const installBtn = $('installBtn');
+    const closeTabBtn = $('closeTabBtn');
+
+    if (isStandaloneMode()) {
+      startBtn?.classList.remove('hidden');
+      installBtn?.classList.add('hidden');
+      closeTabBtn?.classList.add('hidden');
+      return;
+    }
+
+    if (isAppInstalledInBrowser()) {
+      startBtn?.classList.add('hidden');
+      installBtn?.classList.add('hidden');
+      closeTabBtn?.classList.remove('hidden');
+      return;
+    }
+
+    startBtn?.classList.remove('hidden');
+    closeTabBtn?.classList.add('hidden');
+  }
+
+  function closeBrowserTab() {
+    window.close();
+    setTimeout(() => {
+      alert('Der Browser erlaubt das automatische Schließen nicht immer. Bitte diesen Tab manuell schließen und die installierte App über das App-Symbol starten.');
+    }, 250);
+  }
+
+  function showStep(stepId) {
+    document.querySelectorAll('.card').forEach(card => card.classList.remove('active'));
+    const targetCard = $(`step${stepId}`);
+    if (targetCard) targetCard.classList.add('active');
+
+    if (stepId === 2) {
+      setTimeout(() => {
+        if (map) {
+          map.invalidateSize();
+          if (current.lat) map.setView([current.lat, current.lon], 19);
+          drawLines();
+        } else {
+          initMap();
+        }
+      }, 120);
+    }
+  }
+
+  updateStartScreenButtons();
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredInstallPrompt = e;
+    if ($('installBtn') && !isStandaloneMode() && !isAppInstalledInBrowser()) {
+      $('installBtn').classList.remove('hidden');
+    }
+  });
+
+  window.addEventListener('appinstalled', () => {
+    markAppInstalledInBrowser();
+    updateStartScreenButtons();
+  });
+
+  $('installBtn')?.addEventListener('click', async () => {
+    if (deferredInstallPrompt) {
+      deferredInstallPrompt.prompt();
+      const { outcome } = await deferredInstallPrompt.userChoice;
+      if (outcome === 'accepted') {
+        markAppInstalledInBrowser();
+        updateStartScreenButtons();
+      }
+      deferredInstallPrompt = null;
+    } else {
+      alert('Installiere die App über das Browser-Menü → Zum Home-Bildschirm');
+    }
+  });
+
+  function setStatus(text, isError = false) {
+    const statusDiv = $('status');
+    if (!statusDiv) return;
+    statusDiv.innerHTML = text;
+    statusDiv.classList.toggle('error', Boolean(isError));
+  }
+
+  function requestLocation() {
+    if (!navigator.geolocation) {
+      setStatus('❌ Geolokalisierung nicht unterstützt.', true);
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        current = {
+          lat: pos.coords.latitude,
+          lon: pos.coords.longitude,
+          accuracy: Math.min(Math.round(pos.coords.accuracy), 85)
+        };
+        updateMapOnLocation();
+        setStatus('✅ Standort erfasst.');
+        if (map) map.setView([current.lat, current.lon], 19);
+      },
+      (err) => {
+        console.warn(err);
+        let errorMsg = '📍 Standortfehler. Bitte GPS aktivieren & Berechtigung erlauben.';
+        if (err.code === 1) errorMsg = '🔒 Standort-Zugriff verweigert. Bitte in den Einstellungen erlauben.';
+        setStatus(`❌ ${errorMsg}`, true);
+      },
+      { enableHighAccuracy: true, timeout: 12000 }
+    );
+  }
+
+  function updateMapOnLocation() {
+    if (!map || !current.lat) return;
+    const ll = [current.lat, current.lon];
+
+    if (!centerMarker) centerMarker = L.marker(ll, { title: 'Standort' }).addTo(map);
+    else centerMarker.setLatLng(ll);
+
+    if (!accuracyCircle) {
+      accuracyCircle = L.circle(ll, {
+        radius: current.accuracy,
+        weight: 1,
+        color: '#3b82f6',
+        fillOpacity: 0.08
+      }).addTo(map);
+    } else {
+      accuracyCircle.setLatLng(ll).setRadius(current.accuracy);
+    }
+
+    if (!radiusCircle) {
+      radiusCircle = L.circle(ll, {
+        radius: 22,
+        color: '#facc15',
+        weight: 5,
+        dashArray: '7 10',
+        fillOpacity: 0
+      }).addTo(map);
+    } else {
+      radiusCircle.setLatLng(ll).setRadius(22);
+    }
+  }
+
+  function initMap() {
+    if (map) return;
+    map = L.map('map', {
+      zoomControl: true,
+      attributionControl: true
+    }).setView([51.0, 10.5], 6);
+
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> & CartoDB',
+      maxZoom: 20
+    }).addTo(map);
+
+    map.on('click', onMapClick);
+    requestLocation();
+  }
+
+  function deg2rad(d) { return d * Math.PI / 180; }
+  function rad2deg(r) { return r * 180 / Math.PI; }
+
+  function bearing(center, point) {
+    const φ1 = deg2rad(center.lat);
+    const φ2 = deg2rad(point.lat);
+    const Δλ = deg2rad(point.lng - center.lng);
+    const y = Math.sin(Δλ) * Math.cos(φ2);
+    const x = Math.cos(φ1) * Math.sin(φ2) - Math.sin(φ1) * Math.cos(φ2) * Math.cos(Δλ);
+    const θ = rad2deg(Math.atan2(y, x));
+    return (θ + 360) % 360;
+  }
+
+  function destination(center, bearingDeg, distanceMeters = 22) {
+    const R = 6371000;
+    const br = deg2rad(bearingDeg);
+    const lat1 = deg2rad(center.lat);
+    const lon1 = deg2rad(center.lng);
+    const δ = distanceMeters / R;
+    const lat2 = Math.asin(Math.sin(lat1) * Math.cos(δ) + Math.cos(lat1) * Math.sin(δ) * Math.cos(br));
+    const lon2 = lon1 + Math.atan2(Math.sin(br) * Math.sin(δ) * Math.cos(lat1), Math.cos(δ) - Math.sin(lat1) * Math.sin(lat2));
+    return L.latLng(rad2deg(lat2), rad2deg(lon2));
+  }
+
+  function snapToCircle(latlng) {
+    if (!current.lat) return latlng;
+    const center = L.latLng(current.lat, current.lon);
+    return destination(center, bearing(center, latlng), 22);
+  }
+
+  function shortestDeltaDeg(fromDeg, toDeg) {
+    let delta = (toDeg - fromDeg + 360) % 360;
+    if (delta > 180) delta -= 360;
+    return delta;
+  }
+
+  function makeArc(center, p1, p2, segments = 34) {
+    const b1 = bearing(center, p1);
+    const b2 = bearing(center, p2);
+    const delta = shortestDeltaDeg(b1, b2);
+    const points = [];
+    for (let i = 0; i <= segments; i++) {
+      points.push(destination(center, b1 + (delta * i / segments), 22));
+    }
+    return { points, delta, startBearing: b1, endBearing: b2 };
+  }
+
+  function createDirectionDotIcon() {
+    return L.divIcon({
+      className: '',
+      html: '<div class="direction-dot-icon"></div>',
+      iconSize: [28, 28],
+      iconAnchor: [14, 14]
+    });
+  }
+
+  function createDirectionArrowIcon(angleDeg) {
+    const angle = Number.isFinite(angleDeg) ? angleDeg : 0;
+    return L.divIcon({
+      className: '',
+      html: `<div class="direction-arc-arrow-icon" style="transform: rotate(${angle}deg);">
+        <svg viewBox="0 0 64 64" aria-hidden="true" focusable="false">
+          <path class="direction-arc-arrow-shape" d="M8 6 L58 32 L8 58 L20 36 L6 32 L20 28 Z"></path>
+        </svg>
+      </div>`,
+      iconSize: [58, 58],
+      iconAnchor: [29, 29]
+    });
+  }
+
+  function clearDirectionLayers() {
+    [headingLine, turnLine, headingMarker, turnMarker, turnArrowMarker].forEach(layer => {
+      if (layer) layer.remove();
+    });
+    headingLine = turnLine = headingMarker = turnMarker = turnArrowMarker = null;
+  }
+
+  function drawLines() {
+    clearDirectionLayers();
+    if (!current.lat || !map) return;
+
+    const centerLatLng = L.latLng(current.lat, current.lon);
+
+    if (headingPoint) {
+      headingLine = L.polyline([centerLatLng, headingPoint], {
+        color: '#facc15',
+        weight: 6,
+        opacity: 0.95
+      }).addTo(map);
+      headingMarker = L.marker(headingPoint, { icon: createDirectionDotIcon(), interactive: false }).addTo(map);
+    }
+
+    if (turnPoint && headingPoint) {
+      const arc = makeArc(centerLatLng, headingPoint, turnPoint, 34);
+      turnLine = L.polyline(arc.points, {
+        color: '#c81e0d',
+        weight: 6,
+        dashArray: '8 10',
+        opacity: 0.95
+      }).addTo(map);
+      turnMarker = L.marker(turnPoint, { icon: createDirectionDotIcon(), interactive: false }).addTo(map);
+
+      const tangentBearing = arc.endBearing + (arc.delta >= 0 ? 90 : -90);
+      const arrowAngle = tangentBearing - 90;
+      turnArrowMarker = L.marker(turnPoint, {
+        icon: createDirectionArrowIcon(arrowAngle),
+        interactive: false,
+        zIndexOffset: 600
+      }).addTo(map);
+    }
+  }
+
+  function updateNextButton() {
+    const nextBtn = $('toStep3Btn');
+    if (nextBtn) nextBtn.disabled = !(headingPoint && turnPoint);
+  }
+
+  function onMapClick(e) {
+    if (!current.lat) {
+      setStatus('⚠️ Standort wird noch geladen.');
+      return;
+    }
+
+    const clicked = snapToCircle(e.latlng);
+
+    if (headingPoint && turnPoint) {
+      headingPoint = clicked;
+      turnPoint = null;
+      setStatus('🎯 Blickrichtung neu gesetzt.');
+      updateNextButton();
+      drawLines();
+      return;
+    }
+
+    if (!headingPoint) {
+      headingPoint = clicked;
+      setStatus('🎯 Blickrichtung gesetzt.');
+      updateNextButton();
+      drawLines();
+      return;
+    }
+
+    turnPoint = clicked;
+    setStatus('✅ Beide Richtungen gesetzt.');
+    updateNextButton();
+    drawLines();
+  }
+
+  function getShareText() {
+    if (!current.lat || !headingPoint || !turnPoint) {
+      return 'Fehler: Unvollständige Geo-Daten – bitte beide Richtungen setzen.';
+    }
+
+    const lat = current.lat.toFixed(6);
+    const lon = current.lon.toFixed(6);
+    const centerLl = L.latLng(current.lat, current.lon);
+    const hBearing = Math.round(bearing(centerLl, headingPoint));
+    const tBearing = Math.round(bearing(centerLl, turnPoint));
+    const cw = (tBearing - hBearing + 360) % 360;
+    const dir = (cw <= 180) ? 'rechtsherum' : 'linksherum';
+    const dirShort = (cw <= 180) ? 'right' : 'left';
+    const fgtUrl = `https://overpass-osm.de.cool/FotoGeoTool/index.html?q=${lat},${lon},${hBearing},${dirShort}`;
+    const googleMaps = `https://maps.google.com/?q=${lat},${lon}`;
+
+    return `📍 Panoramavideo Position
+📍 Koordinaten: ${lat}, ${lon}
+🎯 Blickrichtung Start: ${hBearing}°
+🔄 Drehrichtung: ${dir} (von ${hBearing}° → ${tBearing}°)
+🗺️ Google Maps: ${googleMaps}
+📸 FotoGeoTool: ${fgtUrl}
+
+🎥 Wichtig:
+Das Panoramavideo wird danach separat aufgenommen und als zweite Nachricht gesendet.`;
+  }
+
+
+  function resetDirectionsForNewStart() {
+    headingPoint = null;
+    turnPoint = null;
+    clearDirectionLayers();
+    updateNextButton();
+    setStatus(current.lat ? '✅ Standort erfasst.' : '📡 Standort wird ermittelt ...');
+  }
+
+  function goToStartScreenAfterShare() {
+    alert('✅ Geo-Text wurde geteilt.\n\nJetzt bitte das Panoramavideo aufnehmen und ebenfalls versenden.');
+    resetDirectionsForNewStart();
+    showStep(1);
+  }
+
+  $('closeTabBtn')?.addEventListener('click', closeBrowserTab);
+
+  $('startBtn')?.addEventListener('click', () => {
+    showStep(2);
+    if (!map) initMap();
+    else if (current.lat) {
+      map.invalidateSize();
+      map.setView([current.lat, current.lon], 19);
+      drawLines();
+    } else {
+      requestLocation();
+    }
+  });
+
+  $('toStep3Btn')?.addEventListener('click', () => {
+    if (!headingPoint || !turnPoint) {
+      alert('Bitte zuerst Blickrichtung und Drehrichtung auf dem gelben Kreis markieren.');
+      return;
+    }
+    showStep(3);
+  });
+
+  $('shareBtn')?.addEventListener('click', async () => {
+    if (!headingPoint || !turnPoint || !current.lat) {
+      alert('Bitte komplettiere die Richtungen in der Kartenansicht.');
+      showStep(2);
+      return;
+    }
+
+    const shareText = getShareText();
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'GeoPosition Panorama', text: shareText });
+        goToStartScreenAfterShare();
+      } else {
+        window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
+        goToStartScreenAfterShare();
+      }
+    } catch (err) {
+      console.warn('Teilen abgebrochen oder nicht möglich', err);
+      try {
+        await navigator.clipboard.writeText(shareText);
+        alert('📋 Text in Zwischenablage kopiert!');
+        goToStartScreenAfterShare();
+      } catch (clipErr) {
+        alert('Text konnte nicht geteilt werden, aber hier ist er:\n\n' + shareText);
+      }
+    }
+  });
+})();
+</script>
+</body>
+</html>

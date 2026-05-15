@@ -1,0 +1,71 @@
+##########################################################
+# Projekt: https://overpass-osm.de.cool/geo-position/
+# Datei: /geo-position/.htaccess
+# Autor: Lutz Müller
+# Programmiersprache: Apache-Konfiguration
+#
+# Cronik:
+#   Version-Datum:
+#     1.0.0, 14.5.2026, 12:10:00 // UTC+2 Deutschland
+#      - Datei erstellt
+#      - GeoPosition-PWA vollständig auf eigenen Ordner begrenzt
+#      - Manifest und Service Worker sauber ausliefern
+#      - keine Weiterleitung auf Root-App / VeloRouteFinder
+##########################################################
+
+DirectoryIndex index.html
+Options -Indexes
+RewriteEngine On
+
+# PWA-Dateitypen korrekt ausliefern
+AddType application/manifest+json .webmanifest
+AddType application/javascript .js
+AddType text/css .css
+AddType image/png .png
+AddType image/svg+xml .svg
+AddType image/webp .webp
+
+# Der Service Worker darf nur diesen Ordner kontrollieren.
+# Das verhindert Vermischungen mit anderen PWAs auf derselben Domain.
+<Files "sw.js">
+    Header set Service-Worker-Allowed "/geo-position/"
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+</Files>
+
+# Manifest während der Fehlerbereinigung nicht aggressiv cachen
+<Files "manifest.webmanifest">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+</Files>
+
+# Index während der Fehlerbereinigung nicht aggressiv cachen
+<Files "index.html">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+    Header set Pragma "no-cache"
+    Header set Expires "0"
+</Files>
+
+# Sensible/unnötige Dateien in diesem Ordner blockieren
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+<FilesMatch "\.(sqlite|sqlite3|db|db3|sql|bak|backup|old|orig|save|tmp|temp|log|7z|tar|gz)$">
+    Require all denied
+</FilesMatch>
+
+# Fehlende Asset-/Manifest-/JS-/CSS-Dateien müssen 404 liefern.
+# Sie dürfen niemals durch index.html ersetzt werden.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} \.(js|css|json|webmanifest|png|jpe?g|gif|svg|webp|ico|map|txt)$ [NC]
+RewriteRule ^ - [R=404,L]
+
+# Nur echte App-Seiten ohne Dateiendung dürfen auf index.html fallen.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !\.[A-Za-z0-9]{1,8}$
+RewriteRule ^.*$ index.html [L]

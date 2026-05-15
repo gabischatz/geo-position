@@ -1,0 +1,10 @@
+{
+  "version": "0.3.17",
+  "name": "GeoPosition Panoramavideo",
+  "date": "2026-05-15",
+  "changes": [
+    "Open-Graph-Preview-Hack eingebaut: og:image:type steht absichtlich auf image/x-icon, obwohl das Vorschaubild eine PNG-Datei ist.",
+    "Direkt darunter steht ein HTML-Kommentar, warum dieser falsche MIME-Type für WhatsApp/Messenger-Vorschauen absichtlich verwendet wird.",
+    "Manifest-Start-URL und Service-Worker-Cache auf v0.3.17 erhöht."
+  ]
+}

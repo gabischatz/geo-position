@@ -1,0 +1,43 @@
+{
+  "id": "/geo-position/?app=geoposition-standort-teiler-v0317",
+  "name": "GeoPosition Panoramavideo",
+  "short_name": "GeoPosition",
+  "description": "Standort, Blickrichtung und Drehrichtung für Panoramavideos erfassen, Geo-Text teilen und danach das Video ebenfalls versenden.",
+  "start_url": "/geo-position/index.html?app=geoposition-standort-teiler-v0317",
+  "scope": "/geo-position/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#090d18",
+  "theme_color": "#0f172a",
+  "lang": "de-DE",
+  "categories": [
+    "navigation",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "/geo-position/assets/geoposition-icon-192-v0.3.1.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/geo-position/assets/geoposition-icon-192-v0.3.1.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/geo-position/assets/geoposition-icon-512-v0.3.1.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/geo-position/assets/geoposition-icon-512-v0.3.1.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
