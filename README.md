@@ -4,6 +4,9 @@
 Die App speichert **Standort, Blickrichtung und Drehrichtung** und erzeugt daraus einen **teilbaren Geo-Text** mit Link zum **FotoGeoTool**.
 
 Nach dem Teilen des Geo-Textes wird das **Panoramavideo separat aufgenommen und ebenfalls versendet**.
+```diff
+- Das FotoGeoTool hat keine Kamera-Aufnahmefunktion!
+```
 
 **<p style="color:red">Das FotoGeoTool hat keine Kamera-Aufnahmefunktion!</p>**
 
