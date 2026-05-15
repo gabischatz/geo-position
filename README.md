@@ -24,23 +24,39 @@ Nach dem Teilen des Geo-Textes wird das **Panoramavideo separat aufgenommen und 
 
 ## Screenshots
 
-### 1. Startseite mit Installationsbutton
-<img src="docs/screenshots/01-startseite-installation.png" alt="Startseite mit Installationsbutton" width="120">
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>1. Startseite mit Installationsbutton</h3>
+      <img src="docs/screenshots/01-startseite-installation.png" alt="Startseite mit Installationsbutton" width="120">
+    </td>
+    <td width="50%" valign="top">
+      <h3>2. Installationsdialog</h3>
+      <img src="docs/screenshots/02-install-dialog.png" alt="Installationsdialog" width="120">
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>3. Browser-Tab nach Installation schließen</h3>
+      <img src="docs/screenshots/03-browser-tab-schliessen.png" alt="Browser-Tab schließen" width="120">
+    </td>
+    <td width="50%" valign="top">
+      <h3>4. Startseite der App</h3>
+      <img src="docs/screenshots/04-startseite.png" alt="Startseite App" width="120">
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <h3>5. Ausrichtung auf der Karte setzen</h3>
+      <img src="docs/screenshots/05-ausrichtung.png" alt="Ausrichtung auf der Karte setzen" width="120">
+    </td>
+    <td width="50%" valign="top">
+      <h3>6. Fertig-Seite und Geo-Text teilen</h3>
+      <img src="docs/screenshots/06-fertig-geo-text.png" alt="Fertig-Seite und Geo-Text teilen" width="120">
+    </td>
+  </tr>
+</table>
 
-### 2. Installationsdialog
-<img src="docs/screenshots/02-install-dialog.png" alt="Installationsdialog" width="120">
-
-### 3. Browser-Tab nach Installation schließen
-<img src="docs/screenshots/03-browser-tab-schliessen.png" alt="Browser-Tab schließen" width="120">
-
-### 4. Startseite der App
-<img src="docs/screenshots/04-startseite.png" alt="Startseite App" width="120">
-
-### 5. Ausrichtung auf der Karte setzen
-<img src="docs/screenshots/05-ausrichtung.png" alt="Ausrichtung auf der Karte setzen" width="120">
-
-### 6. Fertig-Seite und Geo-Text teilen
-<img src="docs/screenshots/06-fertig-geo-text.png" alt="Fertig-Seite und Geo-Text teilen" width="120">
 
 ## Ablauf
 
