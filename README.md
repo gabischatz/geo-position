@@ -8,9 +8,6 @@ Nach dem Teilen des Geo-Textes wird das **Panoramavideo separat aufgenommen und 
 - Das FotoGeoTool hat keine Kamera-Aufnahmefunktion!
 ```
 
-**<p style="color:red">Das FotoGeoTool hat keine Kamera-Aufnahmefunktion!</p>**
-
-
 ## Funktionen
 
 - Standort per GPS erfassen
