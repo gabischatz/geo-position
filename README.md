@@ -38,7 +38,6 @@ Nach dem Teilen des Geo-Textes wird das **Panoramavideo separat aufgenommen und 
 
 ### 6. Fertig-Seite und Geo-Text teilen
 <img src="docs/screenshots/06-fertig-geo-text.png" alt="Fertig-Seite und Geo-Text teilen" width="120">
-![](docs/screenshots/.png)
 
 ## Ablauf
 
